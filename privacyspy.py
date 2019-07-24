@@ -11,9 +11,6 @@ import cld2
 import json
 
 
-__version__ = "1.0"
-
-
 class Spy:
     """
     Spy is the NLP backend used for PrivacySpy privacy
@@ -22,7 +19,7 @@ class Spy:
     whether some article is a privacy policy, and hopefully
     will be able to evaluate a privacy policy's OpenPD score.
     """
-    __version__ = "1"
+    __version__ = "1.0"
 
     def __init__(self):
         """
