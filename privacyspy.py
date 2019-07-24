@@ -161,20 +161,6 @@ class Spy:
                 "sentence": sentences[i].text,
                 "score": score
             })
-            """
-            raw_sentence = sentences[i].text
-            for j, item in enumerate(raw_sentence.splitlines()):
-                if j == 0:
-                    scores.append({
-                        "sentence": item,
-                        "score": score
-                    })
-                else:
-                    scores.append({
-                        "sentence": item,
-                        "score": 0
-                    })
-            """
         for item in scores:
             item["score"] /= max_score
 
