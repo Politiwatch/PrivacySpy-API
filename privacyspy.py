@@ -4,6 +4,7 @@ the main functionality, including the extraction
 and analysis of a privacy policy given its URL address.
 """
 from goose3 import Goose
+from flask import jsonify
 import urllib
 import spacy
 import cld2
@@ -21,7 +22,7 @@ class Spy:
     whether some article is a privacy policy, and hopefully
     will be able to evaluate a privacy policy's OpenPD score.
     """
-    __version__ = "1.0"
+    __version__ = "1"
 
     def __init__(self):
         """
@@ -114,14 +115,21 @@ class Spy:
                 for sentence in sentences]
 
     @staticmethod
-    def output(summary):
+    def output(response, error=False, errorCode=0):
         """
         Returns
         -------
-        JSON object in PrivacySpy format
+        JSON response in PrivacySpy format
         """
+        obj = {
+            "version": __version__,
+            "response": response,
+            "status": "success" if error == False else "error"
+        }
+        if errorCode != 0:
+            obj["errorCode"] = errorCode
 
-        return {"version": __version__, "status": "success", "summary": summary}
+        return jsonify(obj)
 
     def sentence_score(self, sentence):
         """
@@ -149,24 +157,27 @@ class Spy:
         scores = []
         max_score = 0
         for i, sentence in enumerate(words):
-            if len(sentence) == 0:
-                continue
             score = self.sentence_score(sentence)
             if score > max_score:
                 max_score = score
-            raw_sentence = sentences[i].text
-            index = raw_sentence.find('\n')
-            if index == -1:
-                index = len(raw_sentence)
             scores.append({
-                "sentence": raw_sentence[:index+1],
+                "sentence": sentences[i].text,
                 "score": score
             })
-            if index != -1:
-                scores.append({
-                    "sentence": raw_sentence[index:],
-                    "score": 0
-                })
+            """
+            raw_sentence = sentences[i].text
+            for j, item in enumerate(raw_sentence.splitlines()):
+                if j == 0:
+                    scores.append({
+                        "sentence": item,
+                        "score": score
+                    })
+                else:
+                    scores.append({
+                        "sentence": item,
+                        "score": 0
+                    })
+            """
         for item in scores:
             item["score"] /= max_score
 

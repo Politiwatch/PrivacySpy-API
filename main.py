@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from privacyspy import Spy
 
@@ -6,21 +7,38 @@ app = Flask(__name__)
 spy = Spy()
 
 
+@app.route("/")
+def root():
+    return jsonify({
+        "error": "No API request received. See documentation for details."
+    })
+
+
 @app.route("/analyze")
 def analyze():
     url = request.args.get("url")
-    article = spy.extract_policy_from_url(url=url)
+    token = request.args.get("token")
+
+    if url == None:
+        return Spy.output("No URL provided.", error=True, errorCode=1)
+
+    if token == None:
+        return Spy.output("No token provided.", error=True, errorCode=2)
+    elif token != os.environ["privacyspy_token"]:
+        return Spy.output("Invalid token.", error=True, errorCode=3)
+
+    try:
+        article = spy.extract_policy_from_url(url=url)
+    except:
+        return Spy.output("Failed to extract a privacy policy from URL.", error=True, errorCode=4)
+    print(article)
 
     if spy.is_english(article):
         analysis = spy.privacy_policy_summary(article)
         print(analysis)
-        return jsonify(spy.output(analysis))
+        return Spy.output(analysis)
     else:
-        return jsonify({
-            "version": spy.__version__,
-            "status": "error",
-            "error": "The Privacy Policy is not English."
-        })
+        return Spy.output("The Privacy Policy is not English.", error=True, errorCode=5)
 
 
-app.run(debug=True, port=3000)
+app.run(debug=True, port=80)
