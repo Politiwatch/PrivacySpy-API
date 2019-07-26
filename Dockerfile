@@ -9,3 +9,4 @@ RUN pip install -U pip \
     && python3 -m spacy download xx
 
 COPY ./app /app
+EXPOSE 5000

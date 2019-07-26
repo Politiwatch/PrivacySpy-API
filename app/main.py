@@ -39,4 +39,4 @@ def analyze():
         return Spy.output("The Privacy Policy is not English.", error=True, errorCode=5)
 
 
-app.run(port=80)
+app.run(port=5000, debug=True)
