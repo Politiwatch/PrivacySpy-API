@@ -1,5 +1,5 @@
 # PrivacySpy API
-The repository contains the source code powering the API service of PrivacySpy. It is used for text highlighting based on an individual sentence's importance (assuming the sentence is a part of a privacy policy). The Dockerfile is included.
+The repository contains the source code powering the API service of PrivacySpy. It is used for text highlighting based on an individual sentence's importance (assuming the sentence is a part of a privacy policy). `Dockerfile` is included.
 
 ## Installation
 ```
