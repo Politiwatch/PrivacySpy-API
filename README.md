@@ -17,7 +17,7 @@ docker run -p 80:80 -t privacyspy-api
 ```
 
 ## API endpoints
-`/analyze`
+`/analyze` GET
 
 Parameters:
 
