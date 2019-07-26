@@ -26,7 +26,7 @@ Parameters:
 
 Returns:
 
-In case of success, the API endpoint returns a JSON object of the following format:
+- In case of success, the API endpoint returns a JSON object of the following format:
 
 ```
 {
@@ -44,9 +44,9 @@ In case of success, the API endpoint returns a JSON object of the following form
   "version": "1.0"
 }
 ```
-If there was an error, `status` will contain `error`, and the response will contain the error message instead. Additionally, there will be an `error_code` field containing integer values corresponding to the error as follows:
-- `1` -- no URL provided
-- `2` -- no token provided
-- `3` -- invalid token
-- `4` -- failed to extract content from the url
-- `5` -- privacy policy is not in English
+- If there was an error, `status` will contain `error`, and the response will contain the error message instead. Additionally, there will be an `error_code` field containing integer values corresponding to the error as follows:
+    - `1` -- no URL provided
+    - `2` -- no token provided
+    - `3` -- invalid token
+    - `4` -- failed to extract content from the URL
+    - `5` -- privacy policy is not in English
