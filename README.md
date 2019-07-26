@@ -2,6 +2,7 @@
 The repository contains the source code powering the API service of PrivacySpy. It is used for text highlighting based on an individual sentence's importance (assuming the sentence is a part of a privacy policy). `Dockerfile` is included.
 
 ## Installation
+Before proceeding, make sure you have Python 3.6 installed.
 ```
 pip install -r requirements.txt
 pip install -U spacy==2.0.3
