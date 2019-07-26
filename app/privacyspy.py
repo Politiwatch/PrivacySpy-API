@@ -7,7 +7,7 @@ from goose3 import Goose
 from flask import jsonify
 import urllib
 import spacy
-import cld2
+from langdetect import detect
 import json
 
 
@@ -21,7 +21,7 @@ class Spy:
     """
     __version__ = "1.0"
 
-    def __init__(self):
+    def __init__(self, coefs_path="./data/keyword_coefficients.json"):
         """
         Initializes PrivacySpy.
 
@@ -36,7 +36,7 @@ class Spy:
         """
         self.goose = Goose()
         self.nlp = spacy.load('en_core_web_sm')
-        with open("data/keyword_coefficients.json", 'r') as f:
+        with open(coefs_path, 'r') as f:
             self.coefficients = json.load(f)
 
     @staticmethod
@@ -50,9 +50,8 @@ class Spy:
         bool:
             True if English, False otherwise
         """
-        isReliable, _, details = cld2.detect(text)
 
-        return isReliable != 0 and details[0][1] == "en"
+        return detect(text) == "en"
 
     def extract_policy_from_url(self, url):
         """
@@ -119,7 +118,7 @@ class Spy:
         JSON response in PrivacySpy format
         """
         obj = {
-            "version": __version__,
+            "version": Spy.__version__,
             "response": response,
             "status": "success" if error == False else "error"
         }

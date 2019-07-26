@@ -31,14 +31,12 @@ def analyze():
         article = spy.extract_policy_from_url(url=url)
     except:
         return Spy.output("Failed to extract a privacy policy from URL.", error=True, errorCode=4)
-    print(article)
 
     if spy.is_english(article):
         analysis = spy.privacy_policy_summary(article)
-        print(analysis)
         return Spy.output(analysis)
     else:
         return Spy.output("The Privacy Policy is not English.", error=True, errorCode=5)
 
 
-app.run(debug=True, port=80)
+app.run(port=80)
