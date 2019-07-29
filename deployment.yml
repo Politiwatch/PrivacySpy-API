@@ -1,0 +1,26 @@
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "highlight-api"
+  namespace: "default"
+  labels:
+    app: "highlight-api"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "highlight-api"
+  template:
+    metadata:
+      labels:
+        app: "highlight-api"
+    spec:
+      containers:
+      - name: "privacyspy-api"
+        image: "gcr.io/privacyspy/github.com/politiwatch/privacyspy-api:5af008f"
+        env:
+        - name: privacyspy_token
+          valueFrom:
+            secretKeyRef:
+              name: api
+              key: privacyspy_token
