@@ -7,7 +7,6 @@ Before proceeding, make sure you have Python 3.6 installed.
 pip install -r requirements.txt
 pip install -U spacy==2.0.3
 python3 -m spacy download en
-python3 -m spacy download xx
 ```
 
 ## Docker Build
