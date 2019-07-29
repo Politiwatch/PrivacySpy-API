@@ -9,3 +9,4 @@ RUN pip install -U pip \
 
 COPY ./app /app
 EXPOSE 5000
+CMD [ "./launch.sh" ]
