@@ -140,8 +140,11 @@ class Spy:
             sentence score, based on coefficients and sentence length
         """
 
-        return (1 / len(sentence)) * sum([self.coefficients[word]
-                                          for word in sentence if word in self.coefficients.keys()])
+        if len(sentence) == 0:
+            return 0
+        else:
+            return (1 / len(sentence)) * sum([self.coefficients[word]
+                                              for word in sentence if word in self.coefficients.keys()])
 
     def calculate_sentence_scores(self, sentences):
         """
