@@ -13,7 +13,7 @@ python3 -m spacy download xx
 ## Docker Build
 ```
 docker build -t privacyspy-api .
-docker run -p 80:80 -t privacyspy-api
+docker run -p 5000:5000 -t privacyspy-api
 ```
 
 ## API endpoints
