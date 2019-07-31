@@ -69,6 +69,23 @@ class Spy:
 
         return self.goose.extract(url=url).cleaned_text
 
+    def extract_policy_from_html(self, html):
+        """
+        Uses Goose to extract the main content from
+        the given HTML -- usually, from a page with a 
+        privacy policy.
+
+        Returns
+        -------
+        str:
+            Cleaned text representation of the main content
+
+        Raises exception if there was an error connecting
+        to the URL or extracting the main content.
+        """
+
+        return self.goose.extract(raw_html=html).cleaned_text
+
     @staticmethod
     def convertToUrlString(str):
         """

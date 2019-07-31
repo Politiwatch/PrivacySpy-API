@@ -29,8 +29,13 @@ def analyze():
             return Spy.output("Failed to extract a privacy policy from URL.", error=True, errorCode=4)
 
     if request.method == "POST":
-        article = request.form['plain_text']
+        if "plain_text" in request.form:
+            article = request.form["plain_text"]
+        else:
+            article = spy.extract_policy_from_html(
+                html=request.form["raw_html"])
         token = request.form["token"]
+        raw = request.form["raw_html"]
 
     if token == None:
         return Spy.output("No token provided.", error=True, errorCode=2)

@@ -23,6 +23,15 @@ Parameters:
 - `url` - URL of a privacy policy in `application/x-www-form-urlencoded` format
 - `token` - PrivacySpy token that corresponds to the environment variable token of the service
 
+OR
+
+`/analyze` POST
+
+Parameters:
+- `plain_text` - plain text of a privacy policy
+- `raw_html` - raw html of a web page in case plain_text is not submitted
+- `token` - PrivacySpy token that corresponds to the environment variable token of the service
+
 Returns:
 
 - In case of success, the API endpoint returns a JSON object of the following format:
