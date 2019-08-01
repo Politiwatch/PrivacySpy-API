@@ -51,7 +51,10 @@ class Spy:
             True if English, False otherwise
         """
 
-        return detect(text) == "en"
+        try:
+            return detect(text) == "en"
+        except:
+            return False
 
     def extract_policy_from_url(self, url):
         """
