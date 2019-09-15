@@ -195,10 +195,12 @@ class Spy:
     def privacy_policy_summary(self, html):
         if "<p" in html: # without closing > to allow for classes
             soup = BeautifulSoup(html, 'html5lib')
-            for p in soup.find_all("p"):
+            for p in soup.find_all(["p", "li"]):
                 text = self.lemmatize(p.get_text())
                 score = self.sentence_score(text)
                 p["data-score"] = score
+            for a in soup.find_all("a"):
+                a["rel"] = "nofollow"
             body = " ".join(str(t) for t in soup.find("body").contents)
             return body # no score scaling
         else:
