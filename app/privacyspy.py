@@ -9,6 +9,9 @@ import urllib
 import spacy
 from langdetect import detect
 import json
+from readability import Document
+import requests
+from bs4 import BeautifulSoup
 
 
 class Spy:
@@ -19,7 +22,7 @@ class Spy:
     whether some article is a privacy policy, and hopefully
     will be able to evaluate a privacy policy's OpenPD score.
     """
-    __version__ = "1.0"
+    __version__ = "1.1"
 
     def __init__(self, coefs_path="./data/keyword_coefficients.json"):
         """
@@ -34,7 +37,6 @@ class Spy:
             - load the deep RNN model that classifies whether the main content
             at the URL is actually a privacy policy
         """
-        self.goose = Goose()
         self.nlp = spacy.load('en_core_web_sm')
         with open(coefs_path, 'r') as f:
             self.coefficients = json.load(f)
@@ -58,7 +60,7 @@ class Spy:
 
     def extract_policy_from_url(self, url):
         """
-        Uses Goose to extract the main content from
+        Uses "readability-lxml" to extract the main content from
         the given URL -- usually, a privacy policy.
 
         Returns
@@ -69,12 +71,12 @@ class Spy:
         Raises exception if there was an error connecting
         to the URL or extracting the main content.
         """
+        text = requests.get(url).text
+        return self.extract_policy_from_html(text, url=url)
 
-        return self.goose.extract(url=url).cleaned_text
-
-    def extract_policy_from_html(self, html):
+    def extract_policy_from_html(self, html, url=None):
         """
-        Uses Goose to extract the main content from
+        Uses "readability-lxml" to extract the main content from
         the given HTML -- usually, from a page with a 
         privacy policy.
 
@@ -86,18 +88,14 @@ class Spy:
         Raises exception if there was an error connecting
         to the URL or extracting the main content.
         """
-
-        return self.goose.extract(raw_html=html).cleaned_text
-
-    @staticmethod
-    def convertToUrlString(str):
-        """
-        Returns
-        -------
-        str:
-            The string in application/x-www-form-urlencoded format
-        """
-        return urllib.parse.quote(str, safe='')
+        doc = Document(html, url=url)
+        soup = BeautifulSoup(doc.summary(), "html5lib")
+        for img in soup.find_all("img"):
+            _ = img.extract()
+        for tag in soup():
+            for attribute in ["class", "id", "name", "style"]:
+                del tag[attribute]
+        return soup.prettify()
 
     @staticmethod
     def split_to_sentences(doc):
@@ -114,8 +112,15 @@ class Spy:
         """
         return [sent for sent in doc.sents]
 
-    @staticmethod
-    def split_to_lemmas(sentences):
+    def lemmatize(self, text):
+        words = []
+        doc = self.nlp(text)
+        for sentence in doc.sents:
+            words.extend([word.lemma_.lower() for word in sentence if word.pos_ ==
+                 'VERB' or word.pos_ == 'NOUN' or word.pos_ == 'PROPN'])
+        return words
+
+    def split_to_lemmas(self, sentences):
         """
         Parameters
         ----------
@@ -126,7 +131,7 @@ class Spy:
         -------
         List of sentences each split into a list of lemmatized words
         """
-        return [[word.lemma_ for word in sentence if word.pos_ ==
+        return [[word.lemma_.lower() for word in sentence if word.pos_ ==
                  'VERB' or word.pos_ == 'NOUN' or word.pos_ == 'PROPN']
                 for sentence in sentences]
 
@@ -159,7 +164,6 @@ class Spy:
         float:
             sentence score, based on coefficients and sentence length
         """
-
         if len(sentence) == 0:
             return 0
         else:
@@ -171,7 +175,7 @@ class Spy:
         Generates a list of dictionaries each containing a sentence
         in string format and its score based on sentence_score method.
         """
-        words = Spy.split_to_lemmas(sentences)
+        words = self.split_to_lemmas(sentences)
 
         scores = []
         max_score = 0
@@ -188,9 +192,17 @@ class Spy:
 
         return scores
 
-    def privacy_policy_summary(self, text):
-        doc = self.nlp(text)
-
-        sentences = Spy.split_to_sentences(doc)
-
-        return self.calculate_sentence_scores(sentences)
+    def privacy_policy_summary(self, html):
+        if "<p" in html: # without closing > to allow for classes
+            soup = BeautifulSoup(html, 'html5lib')
+            for p in soup.find_all("p"):
+                text = self.lemmatize(p.get_text())
+                score = self.sentence_score(text)
+                p["data-score"] = score
+            body = " ".join(str(t) for t in soup.find("body").contents)
+            return body # no score scaling
+        else:
+            # todo: test heavily
+            doc = self.nlp(BeautifulSoup(html, 'html5lib').get_text())
+            sentences = self.split_to_sentences(doc)
+            return " ".join(["<span data-score='%s'>%s</span>" % (sentence["score"], sentence["sentence"].replace("\n", "<br>")) for sentence in self.calculate_sentence_scores(sentences)])

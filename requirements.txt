@@ -1,3 +1,8 @@
 goose3
 Flask==1.0.2
 langdetect
+readability-lxml
+requests
+spacy==2.0.3
+bs4
+html5lib
