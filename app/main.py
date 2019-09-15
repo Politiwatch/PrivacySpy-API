@@ -33,10 +33,10 @@ def analyze():
         url = request.args.get("url")
         if url == None:
             return Spy.output("No URL provided.", error=True, errorCode=1)
-        # try:
-        article = spy.extract_policy_from_url(url=url)
-        # except:
-        #     return Spy.output("Failed to extract a privacy policy from URL.", error=True, errorCode=4)
+        try:
+            article = spy.extract_policy_from_url(url=url)
+        except:
+            return Spy.output("Failed to extract a privacy policy from URL.", error=True, errorCode=4)
 
     if request.method == "POST":
         article = request.form["text"]
